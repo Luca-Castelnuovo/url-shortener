@@ -1,6 +1,6 @@
 {
-    "name": "cubequence/cubequence",
-    "description": "The CubeQuence Framework",
+    "name": "luca-castelnuovo/url-shortener",
+    "description": "Simple URL shortener",
     "keywords": [
         "framework",
         "cubequence"
@@ -40,7 +40,7 @@
         "seed": "composer phinx seed:run -v"
     },
     "support": {
-        "issues": "https://github.com/Luca-Castelnuovo/CubeQuence/issues",
-        "source": "https://github.com/Luca-Castelnuovo/CubeQuence"
+        "issues": "https://github.com/Luca-Castelnuovo/URL-Shortener/issues",
+        "source": "https://github.com/Luca-Castelnuovo/URL-Shortener"
     }
 }

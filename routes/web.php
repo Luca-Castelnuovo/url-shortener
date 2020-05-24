@@ -2,10 +2,8 @@
 
 use CQ\Routing\Route;
 use CQ\Routing\Middleware;
-use CQ\Middleware\CORS;
 use CQ\Middleware\JSON;
 use CQ\Middleware\Session;
-use CQ\Middleware\RateLimit;
 
 Route::$router = $router->get();
 Middleware::$router = $router->get();
@@ -23,9 +21,9 @@ Middleware::create(['middleware' => [Session::class]], function () {
     Route::get('/dashboard', 'UserController@dashboard');
 });
 
-Middleware::create(['prefix' => '/example', 'middleware' => [RateLimit::class]], function () {
-    Route::get('', 'ExampleController@index');
-    Route::post('', 'ExampleController@create', JSON::class);
-    Route::patch('/{id}', 'ExampleController@update', JSON::class);
-    Route::delete('/{id}', 'ExampleController@delete');
+Route::get('/{short_url}/?{option?}', 'UrlController@index');
+Middleware::create(['prefix' => '/url', 'middleware' => [Session::class]], function () {
+    Route::post('', 'UrlController@create', JSON::class);
+    Route::patch('/{id}', 'UrlController@update', JSON::class);
+    Route::delete('/{id}', 'UrlController@delete');
 });

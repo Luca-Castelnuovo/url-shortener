@@ -1,20 +1,12 @@
-<p align="center"><a href="https://github.com/Luca-Castelnuovo/CubeQuence" target="_blank" rel="noopener"><img src="https://i.imgur.com/SxUDZl9.png" width="400"></a></p>
+# URL-Shortener
 
-<p align="center">
-<a href="https://packagist.org/packages/cubequence/cubequence"><img src="https://poser.pugx.org/cubequence/cubequence/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/cubequence/cubequence"><img src="https://poser.pugx.org/cubequence/cubequence/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/cubequence/cubequence"><img src="https://poser.pugx.org/cubequence/cubequence/license.svg" alt="License"></a>
-</p>
-
-# CubeQuence
-
-Ultra-Light custom php framework.
+Simple URL shortener
 
 ## Installation
 
 For development
 
-1. `composer create-project --prefer-dist cubequence/cubequence hello-world`
+1. `git clone git@github.com:Luca-Castelnuovo/url-shortener.git`
 2. Edit `.env`
 3. `composer migrate`
 4. `composer seed`
@@ -22,15 +14,15 @@ For development
 
 For deployment
 
-1. `git clone https://github.com/Luca-Castelnuovo/CubeQuence`
+1. `git clone git@github.com:Luca-Castelnuovo/url-shortener.git`
 2. `composer install --optimize-autoloader --no-dev`
 3. Edit `.env`
 4. `composer migrate`
 
 ## Security Vulnerabilities
 
-Please review [our security policy](https://github.com/Luca-Castelnuovo/CubeQuence/security/policy) on how to report security vulnerabilities.
+Please review [our security policy](https://github.com/Luca-Castelnuovo/url-shortener/security/policy) on how to report security vulnerabilities.
 
 ## License
 
-The CubeQuence framework is open-sourced software licensed under the [MIT license](LICENSE.md).
+URL-Shortener is open-sourced software licensed under the [MIT license](LICENSE.md).
