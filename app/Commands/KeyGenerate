@@ -1,0 +1,39 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+use CQ\Config\Config;
+use CQ\Helpers\Str;
+
+$config = new Config(__DIR__ . '/../../bootstrap');
+$config->attach('encryption');
+
+$key = Str::random();
+$path =  __DIR__ . '/../../.env';
+
+echo PHP_EOL;
+
+if (!file_exists($path)) {
+    echo "Hash key not set successfully." . PHP_EOL;
+    echo '.env file not found. Please set key manually.' . PHP_EOL;
+
+    echo PHP_EOL;
+
+    echo 'ENCRYPTION_KEY: ' . PHP_EOL;
+    echo $key . PHP_EOL;
+
+    echo PHP_EOL;
+
+    exit;
+}
+
+echo "Hash key set successfully.";
+
+file_put_contents($path, str_replace(
+    'ENCRYPTION_KEY="' . Config::get('hash.key') . '"',
+    'ENCRYPTION_KEY="' . $key . '"',
+    file_get_contents($path)
+));
+
+exit;

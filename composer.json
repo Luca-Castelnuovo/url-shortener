@@ -35,6 +35,7 @@
         "post-install-cmd": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
+        "key": "app/Commands/KeyGenerate",
         "migrate": "composer phinx migrate",
         "phinx": "vendor/bin/phinx",
         "seed": "composer phinx seed:run -v"
