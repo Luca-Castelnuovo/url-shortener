@@ -3,9 +3,9 @@
 namespace App\Controllers;
 
 use CQ\DB\DB;
-use CQ\Helpers\Hash;
 use CQ\Config\Config;
 use CQ\Captcha\hCaptcha;
+use CQ\Helpers\Password;
 use CQ\Controllers\Controller;
 use App\Helpers\RatelimitHelper;
 use App\Validators\UrlValidator;
@@ -38,7 +38,8 @@ class UrlController extends Controller
         }
 
 
-        if (!RatelimitHelper::valid($request)) {
+        $ratelimit = new RatelimitHelper();
+        if (!$ratelimit->valid($request)) {
             if (!hCaptcha::v1(
                 Config::get('captcha.secret_key'),
                 $request->data->{'h-captcha-response'}
@@ -48,7 +49,7 @@ class UrlController extends Controller
         }
 
         if ($url['password']) {
-            if (Hash::check($request->data->password, $url['password'])) {
+            if (Password::check($request->data->password, $url['password'])) {
                 // ask for password
             }
         }
