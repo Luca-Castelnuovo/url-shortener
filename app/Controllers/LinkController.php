@@ -6,6 +6,7 @@ use Exception;
 use CQ\DB\DB;
 use CQ\Config\Config;
 use CQ\Captcha\hCaptcha;
+use CQ\Helpers\UUID;
 use CQ\Helpers\Session;
 use CQ\Helpers\Password;
 use CQ\Controllers\Controller;
@@ -96,9 +97,19 @@ class LinkController extends Controller
             );
         }
 
-        // if short_url provided - check doesn't exist
-        // if not provided - gen short_url
-        // create: UUIDv6, long url, short_url, expiry time, password
+        if (!$request->data->short_url) {
+            $request->data->short_url = 'random';
+        }
+
+        // check doesn't exist
+        // return error
+
+        DB::create('projects', [
+            'id' => UUID::v6(),
+            'user_id' => Session::get('id'),
+            'short_url' => $request->data->short_url,
+            'long_url' => $request->data->long_url
+        ]);
 
         return $this->respondJson(
             'Link Created',
