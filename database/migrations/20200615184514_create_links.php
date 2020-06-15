@@ -2,7 +2,7 @@
 
 use CQ\DB\Migration;
 
-class CreateExampleTable extends Migration
+class CreateLinks extends Migration
 {
     /**
      * Change Method.
@@ -31,9 +31,14 @@ class CreateExampleTable extends Migration
      */
     public function change()
     {
-        $example = $this->table('example', ['id' => false, 'primary_key' => 'id']);
-        $example->addColumn('id', 'uuid')
-            ->addColumn('string', 'string', ['limit' => 2048, 'null' => false])
+        $links = $this->table('links', ['id' => false, 'primary_key' => 'id']);
+        $links->addColumn('id', 'uuid')
+            ->addColumn('user_id', 'uuid')
+            ->addColumn('clicks', 'integer')
+            ->addColumn('short_url', 'string')
+            ->addColumn('long_url', 'string', ['limit' => 2048])
+            ->addColumn('password', 'string')
+            ->addColumn('expires_at', 'datetime', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('created_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
             ->create();

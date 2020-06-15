@@ -3,6 +3,43 @@
 {% set page_script = "/assets/js/dashboard.js" %}
 
 {% block content %}
-<h3>URL Dashboard!</h3>
-<img src="/assets/img/logo.png" alt="Logo">
+<div class="row">
+    <ul class="collection with-header">
+        <li class="collection-header">
+            <h2>Links</h2>
+        </li>
+
+        {% if not links %}
+            <li class="collection-item">
+                <div>
+                    No links found!
+                </div>
+            </li>
+        {% endif %}
+        {% for link in links %}
+            <li class="collection-item">
+                <div>
+                    <a class="waves-effect waves-green btn-flat tooltipped" data-tooltip="Click to copy" onClick="copy('{{ app.url }}/{{ link.short_url }}')">{{ app.url }}/{{ link.short_url }}</a>
+
+                    <span class="btn-flat disabled">
+                        <i class="material-icons hide-on-small-only">arrow_forward</i>
+                        <i class="material-icons hide-on-med-and-up">arrow_downward</i>
+                    </span>
+
+                    <a class="waves-effect waves-green btn-flat truncate tooltipped" data-tooltip="Click to copy" onClick="copy('{{ link.long_url }}')" style="max-width: 30rem">{{ link.long_url }}</a>
+
+                    <a class="secondary-content btn-flat" onClick="deleteLink('{{ link.id }}')">
+                        <i class="material-icons blue-icon">delete</i>
+                    </a>
+                    <a class="secondary-content btn-flat" onClick="editLink('{{ link.id }}')">
+                        <i class="material-icons blue-icon">create</i>
+                    </a>
+                    <a class="secondary-content btn disabled">
+                        Clicks: {{ link.clicks }}
+                    </a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}

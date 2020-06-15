@@ -21,9 +21,9 @@ Middleware::create(['middleware' => [Session::class]], function () {
     Route::get('/dashboard', 'UserController@dashboard');
 });
 
-Route::get('/{short_url}/?{option?}', 'UrlController@index');
-Middleware::create(['prefix' => '/url', 'middleware' => [Session::class]], function () {
-    Route::post('', 'UrlController@create', JSON::class);
-    Route::patch('/{id}', 'UrlController@update', JSON::class);
-    Route::delete('/{id}', 'UrlController@delete');
+Route::get('/{short_url}/?{option?}', 'LinkController@index');
+Middleware::create(['prefix' => '/link', 'middleware' => [Session::class]], function () {
+    Route::post('', 'LinkController@create', JSON::class);
+    Route::patch('/{id}', 'LinkController@update', JSON::class);
+    Route::delete('/{id}', 'LinkController@delete');
 });

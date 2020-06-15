@@ -5,7 +5,7 @@ namespace App\Validators;
 use CQ\Validators\Validator;
 use Respect\Validation\Validator as v;
 
-class UrlValidator extends Validator
+class LinkValidator extends Validator
 {
     /**
      * Validate json submission

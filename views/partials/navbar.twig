@@ -1,11 +1,12 @@
-<nav>
+<nav class="nav-extended">
     <div class="nav-wrapper blue accent-4">
         <a href="/dashboard" class="brand-logo" style="padding-left: 15px">{{ title }}</a>
         
         <a href="#" data-target="sidenav" class="right sidenav-trigger">
             <i class="material-icons">menu</i>
         </a>
-        <ul class="right hide-on-med-and-down">
+
+        <ul class="right hide-on-med-and-down">  
             <li>
                 <a href="/dashboard">Dashboard</a>
             </li>
@@ -13,6 +14,31 @@
                 <a href="/auth/logout">Logout</a>
             </li>
         </ul>
+    </div>
+    <div class="nav-content grey lighten-3 valign-wrapper center-align">
+        <form id="linkCreate" class="container" style="padding-top: 1rem">
+            <div class="row">
+                <div class="col s12 m4 black-text">
+                    Link
+                    <div class="input-field inline">
+                        <input id="long_url" name="long_url" type="url" class="validate grey" placeholder="e.g. longdomain.com/page">
+                        <span class="helper-text" data-error="Valid link is required"></span>
+                    </div>
+                </div>
+
+                <div class="col s12 m4 black-text">
+                    Short URL
+                    <div class="input-field inline">
+                        <input id="short_url" name="short_url" type="text" class="validate grey" placeholder="e.g. twitter">
+                        <span class="helper-text" data-error="Short URL too long"></span>
+                    </div>
+                </div>
+
+                <div class="input-field col s12 m4">
+                    <button class="btn-large blue accent-4 waves-effect waves-light" type="submit">Shorten</button>
+                </div>
+            </div>
+        </form>
     </div>
 
     <ul class="sidenav" id="sidenav">
