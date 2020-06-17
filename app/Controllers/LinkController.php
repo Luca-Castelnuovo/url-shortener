@@ -6,6 +6,7 @@ use Exception;
 use CQ\DB\DB;
 use CQ\Config\Config;
 use CQ\Captcha\hCaptcha;
+use CQ\Helpers\Str;
 use CQ\Helpers\UUID;
 use CQ\Helpers\Session;
 use CQ\Helpers\Password;
@@ -85,7 +86,7 @@ class LinkController extends Controller
      *
      * @return Json
      */
-    public function create($request)
+    public function create($request) // TODO: test function, (with short_url and without)
     {
         try {
             LinkValidator::create($request->data);
@@ -98,11 +99,18 @@ class LinkController extends Controller
         }
 
         if (!$request->data->short_url) {
-            $request->data->short_url = 'random';
+            $request->data->short_url = Str::random(6);
         }
 
-        // check doesn't exist
-        // return error
+        if (DB::has('links', [
+            'short_url' => $request->data->short_url
+        ])) {
+            return $this->respondJson(
+                'Short URL is already used',
+                [],
+                400
+            );
+        }
 
         DB::create('projects', [
             'id' => UUID::v6(),
@@ -168,7 +176,7 @@ class LinkController extends Controller
      *
      * @return Json
      */
-    public function delete($request, $id)
+    public function delete($id)
     {
         if (!DB::has('links', [
             'id' => $id,

@@ -16,7 +16,8 @@ class LinkValidator extends Validator
      */
     public static function create($data)
     {
-        $v = v::attribute('string', v::alnum(' ', '-')->length(1, 64));
+        $v = v::attribute('long_url', v::url()->length(1, 2048))
+            ->attribute('short_url', v::alnum()->length(1, 255));
 
         self::validate($v, $data);
     }
@@ -30,7 +31,8 @@ class LinkValidator extends Validator
      */
     public static function update($data)
     {
-        $v = v::attribute('string', v::optional(v::alnum()->length(1, 64)));
+        $v = v::attribute('long_url', v::optional(v::url()->length(1, 2048)))
+            ->attribute('short_url', v::optional(v::alnum()->length(1, 255)));
 
         self::validate($v, $data);
     }

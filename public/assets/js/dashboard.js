@@ -22,8 +22,13 @@ const copy = str => {
     document.body.removeChild(el);
 };
 
-// TODO: create link
-// POST - /link
+const createLinkForm = document.querySelector('form#linkCreate');
+createLinkForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const data = formDataToJSON(new FormData(createLinkForm));
+
+    apiUse('post', '/link', data);
+});
 
 const editLink = id => {
     // pre-fill modal with link details
@@ -33,7 +38,7 @@ const editLink = id => {
     // PATCH - /link/id
 
     alert(id);
-}
+};
 
 const deleteLink = id => {
     // confirm request
@@ -43,4 +48,4 @@ const deleteLink = id => {
     // DELETE - /link/id
 
     alert(id);
-}
+};
