@@ -1,6 +1,6 @@
 <?php
 
-return [ // 5 requests / 60 seconds
-    'max_requests' => '5',
+return [
+    'max_requests' => '2', // TODO: set to 30
     'reset_time' => '60'
 ];

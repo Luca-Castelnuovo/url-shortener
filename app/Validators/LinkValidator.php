@@ -17,7 +17,7 @@ class LinkValidator extends Validator
     public static function create($data)
     {
         $v = v::attribute('long_url', v::url()->length(1, 2048))
-            ->attribute('short_url', v::alnum()->length(1, 255));
+            ->attribute('short_url', v::optional(v::alnum()->length(1, 255)));
 
         self::validate($v, $data);
     }

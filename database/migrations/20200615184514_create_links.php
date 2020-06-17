@@ -34,10 +34,10 @@ class CreateLinks extends Migration
         $links = $this->table('links', ['id' => false, 'primary_key' => 'id']);
         $links->addColumn('id', 'uuid')
             ->addColumn('user_id', 'uuid')
-            ->addColumn('clicks', 'integer')
+            ->addColumn('clicks', 'integer', ['default' => 0])
             ->addColumn('short_url', 'string')
             ->addColumn('long_url', 'string', ['limit' => 2048])
-            ->addColumn('password', 'string')
+            ->addColumn('password', 'string', ['null' => true])
             ->addColumn('expires_at', 'datetime', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('created_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])

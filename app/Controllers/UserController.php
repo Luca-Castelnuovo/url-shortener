@@ -24,7 +24,8 @@ class UserController extends Controller
                 'short_url',
                 'long_url',
                 'password',
-                'expires_at'
+                'expires_at',
+                'created_at'
             ],
             [
                 'user_id' => Session::get('id'),

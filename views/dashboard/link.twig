@@ -1,0 +1,44 @@
+<tr>
+    <td>
+        <a
+            class="waves-effect waves-green btn-flat tooltipped"
+            data-tooltip="Click to copy"
+            onClick="copy('{{ app.url }}/{{ link.short_url }}')"
+            style="text-transform: unset;"
+        >
+            {{ app.url }}/{{ link.short_url }}
+        </a>
+    </td>
+
+    <td>
+        <a
+            class="waves-effect waves-green btn-flat tooltipped truncate"
+            data-tooltip="Click to copy"
+            onClick="copy('{{ link.long_url }}')"
+            style="text-transform: unset; max-width: 30rem"
+        >
+            {{ link.long_url }}
+        </a>
+    </td>
+
+    <td>{{ link.clicks }}</td>
+
+    <td>{{ link.created_at }}</td>
+
+    <td>
+        <button
+            class="col s4 btn waves-effect waves-light blue accent-4"
+            onClick="editLink('{{ link.id}}')"
+            style="margin-right: 7px"
+        >
+            <i class="material-icons">create</i>
+        </button>
+        
+        <button
+            class="col s4 btn waves-effect waves-light red accent-4"
+            onClick="deleteLink('{{ link.id}}')"
+        >
+            <i class="material-icons">delete</i>
+        </button>
+    </td>
+</tr>

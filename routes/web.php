@@ -10,6 +10,10 @@ Middleware::$router = $router->get();
 
 Route::get('/', 'GeneralController@index');
 Route::get('/error/{code}', 'GeneralController@error');
+Route::get('/l', 'LinkController@view');
+
+Route::get('/{short_url}/?{option?}', 'LinkController@index');
+Route::post('/{short_url}/?{option?}', 'LinkController@index', JSON::class);
 
 Middleware::create(['prefix' => '/auth'], function () {
     Route::get('/request', 'AuthController@request');
@@ -21,9 +25,8 @@ Middleware::create(['middleware' => [Session::class]], function () {
     Route::get('/dashboard', 'UserController@dashboard');
 });
 
-Route::get('/{short_url}/?{option?}', 'LinkController@index');
 Middleware::create(['prefix' => '/link', 'middleware' => [Session::class]], function () {
     Route::post('', 'LinkController@create', JSON::class);
-    Route::patch('/{id}', 'LinkController@update', JSON::class);
+    Route::put('/{id}', 'LinkController@update', JSON::class);
     Route::delete('/{id}', 'LinkController@delete');
 });

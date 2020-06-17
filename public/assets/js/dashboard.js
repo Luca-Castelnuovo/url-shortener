@@ -31,21 +31,24 @@ createLinkForm.addEventListener('submit', e => {
 });
 
 const editLink = id => {
-    // pre-fill modal with link details
+    // TODO: pre-fill modal with password (if set only show remove password btn) and expires
 
-    // open form
+    // M.Modal.getInstance(
+    //     document.querySelector(`.modal#edit`)
+    // ).open();
 
-    // PATCH - /link/id
+    /*
+    apiUse('put', `/file/${id}`, {
+        password: '1234',
+        expires_at: '2021-02-25'
+    });
+    */
 
-    alert(id);
+    alert('Work in progress!');
 };
 
 const deleteLink = id => {
-    // confirm request
-
-    // send delete ajax request
-    
-    // DELETE - /link/id
-
-    alert(id);
+    if (confirm('Are you sure?')) {
+        apiUse('delete', `/link/${id}`);
+    }
 };

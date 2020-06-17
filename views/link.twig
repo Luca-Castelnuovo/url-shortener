@@ -1,0 +1,77 @@
+{% extends "partials/base.twig" %}
+{% set title = "Link" %}
+{% set navbarDisable = true %}
+{% set page_script = "/assets/js/link.js" %}
+
+{% block content %}
+<div class="row">
+    <div class="col s12 m8 offset-m2 l4 offset-l4">
+        <div class="card">
+            <div class="card-action blue accent-4 white-text">
+                <h3>URL Shortener</h3>
+            </div>
+            <div class="card-content">
+                {% if error %}
+                    <div class="card-panel hoverable z-depth-2 center-align">
+                        <span class="flow-text">
+                            {{ error }}
+                        </span>
+                    </div>
+                {% endif %}
+
+                {% if option == 'qr' %}
+                    <div class="card-panel hoverable z-depth-2 center-align">
+                        <span class="flow-text">{{ long_url }}</span>
+                        <br /><br />
+                        <img class="responsive-img" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={{ short_url }}" />
+                    </div>
+                {% endif %}
+
+                {% if option == 'confirm' %}
+                    <div class="card-panel hoverable z-depth-2 center-align">
+                        <p class="flow-text">
+                            You will be redirected to: <span>{{ long_url }}</span>
+                        </p>
+                        <br />
+                        <div class="row">
+                            <a href="#" onClick="window.history.back()" class="col s12 m5 btn waves-effect waves-light red accent-4">Cancel</a>
+                            <div class="col m2"></div>
+                            <a href="{{ long_url }}" class="col s12 m5 btn waves-effect waves-light blue accent-4">Confirm</a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if option == 'password' %}
+                    <div class="card-panel hoverable z-depth-2 center-align">
+                        <p class="flow-text">
+                            Please enter password
+                        </p>
+                        {# check with js #}
+                    </div>
+                {% endif %}
+
+                {% if option == 'ratelimit' %}
+                    <div class="card-panel hoverable z-depth-2 center-align">
+                        <p class="flow-text">
+                            Please complete captcha
+                        </p>
+                        <br />
+                        <form id="ratelimit">
+                            <input type="hidden" name="state" value="{{ state }}">
+                            <input type="hidden" name="option" value="{{ other_option }}">
+                            <div
+                                class="h-captcha"
+                                data-sitekey="{{ site_key }}"
+                                data-size="compact"
+                                data-callback="ratelimitSubmit"
+                            ></div>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://hcaptcha.com/1/api.js" async defer></script>
+{% endblock %}
