@@ -42,7 +42,37 @@ class UserController extends Controller
         return $this->respond('dashboard.twig', [
             'app' => Config::get('app'),
             'links' => $links,
-            'can_edit' => $variant_provider->configuredValue()
+            'can_edit' => $variant_provider->configuredValue(),
+            'admin' => Session::get('variant') === 'Admin'
+        ]);
+    }
+
+    /**
+     * Admin screen
+     * 
+     * @return Html
+     */
+    public function admin()
+    {
+        $links = DB::select(
+            'links',
+            [
+                'id',
+                'clicks',
+                'short_url',
+                'long_url',
+                'created_at'
+            ],
+            [
+                'ORDER' => ['created_at' => 'DESC']
+            ]
+        );
+
+        return $this->respond('admin.twig', [
+            'app' => Config::get('app'),
+            'links' => $links,
+            'can_edit' => false,
+            'admin' => Session::get('variant') === 'Admin'
         ]);
     }
 }

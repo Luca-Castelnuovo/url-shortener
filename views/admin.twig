@@ -1,0 +1,27 @@
+{% extends "partials/base.twig" %}
+{% set title = "Admin" %}
+{% set page_script = "/assets/js/dashboard.js" %}
+
+{% block content %}
+<div class="row">
+    <table class="highlight responsive-table">
+        <thead>
+            <tr>
+                <th>Short URL</th>
+                <th>Orginal URL</th>
+                <th>Clicks</th>
+                <th>Created At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for link in links %}
+                {% include 'dashboard/link.twig' %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>window._links = {{ links|json_encode|raw }}</script>
+{% endblock %}

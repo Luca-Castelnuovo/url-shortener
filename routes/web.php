@@ -23,6 +23,7 @@ Middleware::create(['prefix' => '/auth'], function () {
 
 Middleware::create(['middleware' => [Session::class]], function () {
     Route::get('/dashboard', 'UserController@dashboard');
+    Route::get('/admin', 'UserController@admin');
 });
 
 Middleware::create(['prefix' => '/link', 'middleware' => [Session::class]], function () {

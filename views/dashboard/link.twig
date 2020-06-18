@@ -22,7 +22,7 @@
             </button>
         {% endif %}
         
-        <button class="col s4 btn waves-effect waves-light red accent-4" onClick="deleteLink('{{ link.id}}')">
+        <button class="col {{ can_edit ? 's4' : 's12' }} btn waves-effect waves-light red accent-4" onClick="deleteLink('{{ link.id}}')">
             <i class="material-icons">delete</i>
         </button>
     </td>
