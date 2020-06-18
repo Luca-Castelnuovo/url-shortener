@@ -54,6 +54,10 @@ class UserController extends Controller
      */
     public function admin()
     {
+        if (Session::get('variant') !== 'Admin') {
+            return $this->redirect('/dashboard', 403);
+        }
+        
         $links = DB::select(
             'links',
             [
@@ -72,7 +76,7 @@ class UserController extends Controller
             'app' => Config::get('app'),
             'links' => $links,
             'can_edit' => false,
-            'admin' => Session::get('variant') === 'Admin'
+            'admin' => true
         ]);
     }
 }
