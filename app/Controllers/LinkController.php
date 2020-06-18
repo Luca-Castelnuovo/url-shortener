@@ -26,39 +26,41 @@ class LinkController extends Controller
      */
     public function view($request)
     {
-        $s = $request->getQueryParams()['s'] ?: ''; // State
-        $k = $request->getQueryParams()['k'] ?: ''; // Short Url
-        $l = $request->getQueryParams()['l'] ?: ''; // Long Url
-        $o = $request->getQueryParams()['o'] ?: ''; // Option
-        $oo = $request->getQueryParams()['oo'] ?: ''; // Other Option
-        $e = $request->getQueryParams()['e'] ?: ''; // Error
+        $state = $request->getQueryParams()['s'] ?: '';
+        $error = $request->getQueryParams()['e'] ?: '';
+        $short_url = $request->getQueryParams()['k'] ?: '';
+        $long_url = $request->getQueryParams()['l'] ?: '';
+        $option = $request->getQueryParams()['o'] ?: '';
+        $original_option = $request->getQueryParams()['oo'] ?: '';
+        $fingerprint = $request->getQueryParams()['f'] ?: '';
 
-        if (!State::valid($s)) {
+        if (!State::valid($state)) {
             return $this->redirect('/');
         }
 
-        switch ($e) {
+        switch ($error) {
             case 'not_found':
-                $e = 'The requested link could not be found!';
+                $error = 'The requested link could not be found!';
                 break;
 
             case 'expired':
-                $e = 'The requested link has expired!';
+                $error = 'The requested link has expired!';
                 break;
 
             default:
-                $e = '';
+                $error = '';
                 break;
         }
 
         return $this->respond('link.twig', [
             'state' => State::set(),
-            'site_key' => Config::get('captcha.site_key'),
-            'short_url' => Config::get('app.url') . "/{$k}",
-            'long_url' => $l,
-            'option' => $o,
-            'other_option' => $oo,
-            'error' => $e
+            'error' => $error,
+            'short_url' => Config::get('app.url') . "/{$short_url}",
+            'long_url' => $long_url,
+            'option' => $option,
+            'original_option' => $original_option,
+            'fingerprint' => $fingerprint,
+            'site_key' => Config::get('captcha.site_key')
         ]);
     }
 
@@ -85,81 +87,74 @@ class LinkController extends Controller
             return $this->redirect("/l?s={$state}&k={$short_url}&e=not_found", 404);
         }
 
-        if ($link['expires_at'] && $link['expires_at'] > date('Y-m-d H:i:s')) { // TODO: test
+        if ($link['expires_at'] && $link['expires_at'] > date('Y-m-d H:i:s')) {
             $state = State::set();
 
             return $this->redirect("/l?s={$state}&k={$short_url}&e=expired", 404);
         }
 
-        $ratelimit = new RatelimitHelper($request);
-        if (!$ratelimit->valid()) {
-            if ($option === 'ratelimit') {
-                if (!State::valid($request->data->state)) {
-                    return $this->respondJson(
-                        'Incorrect State',
-                        ['redirect' => Config::get('app.url') . "/{$short_url}"]
-                    );
-                }
-
-                if (!hCaptcha::v1(
-                    Config::get('captcha.secret_key'),
-                    $request->data->{'h-captcha-response'}
-                )) {
-                    return $this->respondJson(
-                        'Captcha Failed',
-                        ['redirect' => Config::get('app.url') . "/{$short_url}"]
-
-                    );
-                }
-
-                // DB::delete('cq_ratelimit', [
-                //     'fingerprint' => $ratelimit->getFingerprint()
-                // ]);
-
-                if ($request->data->option) {
-                    return $this->respondJson(
-                        'Captcha Completed',
-                        ['redirect' => Config::get('app.url') . "/{$short_url}/{$request->data->option}"]
-                    );
-                }
-
+        if ($option === 'ratelimit') {
+            if (!State::valid($request->data->state)) {
                 return $this->respondJson(
-                    'Captcha Completed',
-                    ['redirect' => $link['long_url']]
+                    'Incorrect State',
+                    ['redirect' => Config::get('app.url') . "/{$short_url}"]
                 );
             }
 
-            $state = State::set();
+            if (!hCaptcha::v1(
+                Config::get('captcha.secret_key'),
+                $request->data->{'h-captcha-response'}
+            )) {
+                return $this->respondJson(
+                    'Captcha Failed',
+                    ['redirect' => Config::get('app.url') . "/{$short_url}"]
+                );
+            }
 
-            return $this->redirect("/l?s={$state}&k={$short_url}&o=ratelimit&oo={$option}", 429);
+            DB::delete('cq_ratelimit', [
+                'fingerprint' => $request->data->fingerprint
+            ]);
+
+            return $this->respondJson(
+                'Captcha Completed',
+                ['redirect' => Config::get('app.url') . "/{$short_url}/{$request->data->original_option}"]
+            );
         }
 
-        // if ($link['password']) {
-        //     if ($option === 'password') {
-        //         if (!State::valid($request->data->state)) {
-        //             return $this->respondJson(
-        //                 'Incorrect State',
-        //                 ['redirect' => Config::get('app.url') . "/{$short_url}"]
-        //             );
-        //         }
+        $ratelimit = new RatelimitHelper($request);
+        if (!$ratelimit->valid()) {
+            $state = State::set();
+            $fingerprint = $ratelimit->getFingerprint();
 
-        //         if (Password::check($request->data->password, $link['password'])) {
-        //             return $this->respondJson(
-        //                 'Password Accepted',
-        //                 ['redirect' => $link['long_url']]
-        //             );
-        //         }
+            return $this->redirect("/l?s={$state}&k={$short_url}&o=ratelimit&oo={$option}&f={$fingerprint}", 429);
+        }
 
-        //         return $this->respondJson(
-        //             'Password Denied',
-        //             ['redirect' => Config::get('app.url') . "/{$short_url}"]
-        //         );
-        //     }
+        if ($option === 'password') {
+            if (!State::valid($request->data->state)) {
+                return $this->respondJson(
+                    'Incorrect State',
+                    ['redirect' => Config::get('app.url') . "/{$short_url}"]
+                );
+            }
 
-        //     $state = State::set();
+            if (!Password::check($request->data->password, $link['password'])) {
+                return $this->respondJson(
+                    'Password Incorrect',
+                    ['redirect' => Config::get('app.url') . "/{$short_url}"]
+                );
+            }
 
-        //     return $this->redirect("/l?state={$state}&o=password&k={$short_url}", 401);
-        // }
+            return $this->respondJson(
+                'Password Correct',
+                ['redirect' => $link['long_url']]
+            );
+        }
+
+        if ($link['password']) {
+            $state = State::set();
+
+            return $this->redirect("/l?s={$state}&k={$short_url}&o=password", 401);
+        }
 
 
         DB::update('links', [
@@ -261,6 +256,8 @@ class LinkController extends Controller
                 404
             );
         }
+
+        // TODO: build function
 
         DB::update('links', [
             'password' => '',
