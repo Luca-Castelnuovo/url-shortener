@@ -26,7 +26,7 @@ class LinkSeeder extends Seeder
                 'short_url'     => $faker->domainWord,
                 'long_url'      => $faker->url,
                 'password'      => Hash::make($faker->password),
-                'expires_at'    => null,
+                'expires_at'    => date('Y-m-d'),
                 'updated_at'    => date('Y-m-d H:i:s'),
                 'created_at'    => date('Y-m-d H:i:s'),
             ];

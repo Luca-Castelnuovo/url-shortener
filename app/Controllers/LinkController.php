@@ -11,7 +11,6 @@ use CQ\Helpers\UUID;
 use CQ\Helpers\State;
 use CQ\Helpers\Session;
 use CQ\Helpers\Variant;
-use CQ\Helpers\Password;
 use CQ\Controllers\Controller;
 use App\Helpers\RatelimitHelper;
 use App\Validators\LinkValidator;
@@ -88,7 +87,7 @@ class LinkController extends Controller
             return $this->redirect("/l?s={$state}&k={$short_url}&e=not_found", 404);
         }
 
-        if ($link['expires_at'] && $link['expires_at'] > date('Y-m-d H:i:s')) {
+        if ($link['expires_at'] && $link['expires_at'] < date('Y-m-d')) {
             $state = State::set();
 
             return $this->redirect("/l?s={$state}&k={$short_url}&e=expired", 404);
@@ -158,13 +157,12 @@ class LinkController extends Controller
                 );
             }
 
-            // TODO: debug Password class
-            // if (!Password::check($request->data->password, $link['password'])) {
-            //     return $this->respondJson(
-            //         'Password Incorrect',
-            //         ['redirect' => Config::get('app.url') . "/{$short_url}"]
-            //     );
-            // }
+            if ($request->data->password !== $link['password']) {
+                return $this->respondJson(
+                    'Password Incorrect',
+                    ['redirect' => Config::get('app.url') . "/{$short_url}"]
+                );
+            }
 
             return $this->respondJson(
                 'Password Correct',
@@ -302,20 +300,11 @@ class LinkController extends Controller
             );
         }
 
-        $link = DB::get(
-            'links',
-            [
-                'password',
-                'expires_at'
-            ],
-            ['id' => $id]
-        );
-
         DB::update(
             'links',
             [
-                'password' => $request->data->password ?: $link['password'],
-                'expires_at' => $request->data->expires_at ?: $link['expires_at']
+                'password' => $request->data->password ?: null,
+                'expires_at' => $request->data->expires_at ?: null
             ],
             ['id' => $id]
         );

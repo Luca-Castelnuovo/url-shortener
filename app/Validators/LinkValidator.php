@@ -31,7 +31,7 @@ class LinkValidator extends Validator
      */
     public static function update($data)
     {
-        $v = v::attribute('expires_at', v::optional(v::stringType()->length(1, 10)))
+        $v = v::attribute('expires_at', v::optional(v::stringType()->length(1, 255)))
             ->attribute('password', v::optional(v::stringType()->length(1, 255)));
 
         self::validate($v, $data);

@@ -6,6 +6,14 @@ document.addEventListener('DOMContentLoaded', function() {
     M.Modal.init(document.querySelectorAll('.modal'), {
         dismissible: false
     });
+
+    M.Datepicker.init(document.querySelectorAll('.datepicker'), {
+        autoClose: true,
+        firstDay: 1,
+        format: 'yyyy-mm-dd',
+        minDate: new Date(),
+        showClearBtn: true
+    })
 });
 
 const copy = str => {
@@ -31,21 +39,23 @@ createLinkForm.addEventListener('submit', e => {
 });
 
 const editLink = id => {
-    // TODO: pre-fill modal with password (if set only show remove password btn) and expires
+    let link = window._links.find(o => o.id === id);
 
-    // M.Modal.getInstance(
-    //     document.querySelector(`.modal#edit`)
-    // ).open();
+    document.querySelector('input[name="id"]').value = id;
+    document.querySelector('input[name="expires_at"]').value = link.expires_at;
+    document.querySelector('input[name="password"]').value = link.password;
 
-    /*
-    apiUse('put', `/file/${id}`, {
-        password: '1234',
-        expires_at: '2021-02-25'
-    });
-    */
-
-    alert('Work in progress!');
+    M.updateTextFields();
+    M.Modal.getInstance(document.querySelector(`form#linkEdit`)).open();
 };
+
+const editLinkForm = document.querySelector('form#linkEdit');
+editLinkForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const data = formDataToJSON(new FormData(editLinkForm));
+
+    apiUse('put', `/link/${data.id}`, data);
+});
 
 const deleteLink = id => {
     if (confirm('Are you sure?')) {
