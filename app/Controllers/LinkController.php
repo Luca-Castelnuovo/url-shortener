@@ -93,7 +93,7 @@ class LinkController extends Controller
             return $this->redirect("/l?s={$state}&k={$short_url}&e=expired", 404);
         }
 
-        if ($option === 'ratelimit') {
+        if ($option === 'ratelimit') { // TODO: add validator
             if (!State::valid($request->data->state)) {
                 return $this->respondJson(
                     'Incorrect State',
@@ -129,7 +129,7 @@ class LinkController extends Controller
             return $this->redirect("/l?s={$state}&k={$short_url}&o=ratelimit&oo={$option}&f={$fingerprint}", 429);
         }
 
-        if ($option === 'password') {
+        if ($option === 'password') { // TODO: add validator
             if (!State::valid($request->data->state)) {
                 return $this->respondJson(
                     'Incorrect State',
@@ -137,7 +137,7 @@ class LinkController extends Controller
                 );
             }
 
-            if (!Password::check($request->data->password, $link['password'])) {
+            if (!Password::check($request->data->password, $link['password'])) { // TODO: debug Password class
                 return $this->respondJson(
                     'Password Incorrect',
                     ['redirect' => Config::get('app.url') . "/{$short_url}"]

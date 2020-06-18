@@ -71,6 +71,7 @@
                         <input type="hidden" name="state" value="{{ state }}">
                         <input type="hidden" name="fingerprint" value="{{ fingerprint }}">
                         <input type="hidden" name="original_option" value="{{ original_option }}">
+                        
                         <div
                             class="h-captcha"
                             data-sitekey="{{ site_key }}"
@@ -83,5 +84,6 @@
     </div>
 </div>
 
+<input type="hidden" id="short_url" value="{{ short_url }}">
 <script src="https://hcaptcha.com/1/api.js" async defer></script>
 {% endblock %}
