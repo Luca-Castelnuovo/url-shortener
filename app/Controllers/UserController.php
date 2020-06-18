@@ -5,6 +5,7 @@ namespace App\Controllers;
 use CQ\DB\DB;
 use CQ\Config\Config;
 use CQ\Helpers\Session;
+use CQ\Helpers\Variant;
 use CQ\Controllers\Controller;
 
 class UserController extends Controller
@@ -33,9 +34,15 @@ class UserController extends Controller
             ]
         );
 
+        $variant_provider = new Variant([
+            'user' => Session::get('variant'),
+            'type' => 'can_edit'
+        ]);
+
         return $this->respond('dashboard.twig', [
             'app' => Config::get('app'),
-            'links' => $links
+            'links' => $links,
+            'can_edit' => $variant_provider->configuredValue()
         ]);
     }
 }

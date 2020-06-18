@@ -31,8 +31,8 @@ class LinkValidator extends Validator
      */
     public static function update($data)
     {
-        $v = v::attribute('long_url', v::optional(v::url()->length(1, 2048)))
-            ->attribute('short_url', v::optional(v::alnum()->length(1, 255)));
+        $v = v::attribute('expires_at', v::optional(v::stringType()->length(1, 10)))
+            ->attribute('password', v::optional(v::stringType()->length(1, 255)));
 
         self::validate($v, $data);
     }
@@ -46,10 +46,10 @@ class LinkValidator extends Validator
      */
     public static function ratelimit($data)
     {
-        $v = v::attribute('long_url', v::optional(v::url()->length(1, 2048)))
-            ->attribute('short_url', v::optional(v::alnum()->length(1, 255)));
-
-        // TODO: state,fingerprint,original_option (qr, confirm),h-captcha-response
+        $v = v::attribute('state', v::alnum()->length(1, 32))
+            ->attribute('fingerprint', v::alnum()->length(1, 50))
+            ->attribute('original_option',  v::optional(v::oneOf(v::equals('qr'), v::equals('confirm'))))
+            ->attribute('h-captcha-response', v::stringType());
 
         self::validate($v, $data);
     }
@@ -63,11 +63,8 @@ class LinkValidator extends Validator
      */
     public static function password($data)
     {
-        $v = v::attribute('long_url', v::optional(v::url()->length(1, 2048)))
-            ->attribute('short_url', v::optional(v::alnum()->length(1, 255)));
-
-
-        // TODO: state, password
+        $v = v::attribute('state', v::alnum()->length(1, 32))
+            ->attribute('password', v::stringType()->length(1, 255));
 
         self::validate($v, $data);
     }

@@ -10,6 +10,7 @@ use CQ\Helpers\Str;
 use CQ\Helpers\UUID;
 use CQ\Helpers\State;
 use CQ\Helpers\Session;
+use CQ\Helpers\Variant;
 use CQ\Helpers\Password;
 use CQ\Controllers\Controller;
 use App\Helpers\RatelimitHelper;
@@ -93,11 +94,21 @@ class LinkController extends Controller
             return $this->redirect("/l?s={$state}&k={$short_url}&e=expired", 404);
         }
 
-        if ($option === 'ratelimit') { // TODO: add validator
+        if ($option === 'ratelimit') {
             if (!State::valid($request->data->state)) {
                 return $this->respondJson(
                     'Incorrect State',
                     ['redirect' => Config::get('app.url') . "/{$short_url}"]
+                );
+            }
+
+            try {
+                LinkValidator::ratelimit($request->data);
+            } catch (Exception $e) {
+                return $this->respondJson(
+                    'Provided data was malformed',
+                    json_decode($e->getMessage()),
+                    422
                 );
             }
 
@@ -129,7 +140,7 @@ class LinkController extends Controller
             return $this->redirect("/l?s={$state}&k={$short_url}&o=ratelimit&oo={$option}&f={$fingerprint}", 429);
         }
 
-        if ($option === 'password') { // TODO: add validator
+        if ($option === 'password') {
             if (!State::valid($request->data->state)) {
                 return $this->respondJson(
                     'Incorrect State',
@@ -137,12 +148,23 @@ class LinkController extends Controller
                 );
             }
 
-            if (!Password::check($request->data->password, $link['password'])) { // TODO: debug Password class
+            try {
+                LinkValidator::password($request->data);
+            } catch (Exception $e) {
                 return $this->respondJson(
-                    'Password Incorrect',
-                    ['redirect' => Config::get('app.url') . "/{$short_url}"]
+                    'Provided data was malformed',
+                    json_decode($e->getMessage()),
+                    422
                 );
             }
+
+            // TODO: debug Password class
+            // if (!Password::check($request->data->password, $link['password'])) {
+            //     return $this->respondJson(
+            //         'Password Incorrect',
+            //         ['redirect' => Config::get('app.url') . "/{$short_url}"]
+            //     );
+            // }
 
             return $this->respondJson(
                 'Password Correct',
@@ -211,7 +233,18 @@ class LinkController extends Controller
             );
         }
 
-        // TODO: validate variant rank
+        $variant_provider = new Variant([
+            'user' => Session::get('variant'),
+            'type' => 'max_links',
+            'current_value' => DB::count('links', ['user_id' => Session::get('id')])
+        ]);
+        if (!$variant_provider->limitReached()) {
+            return $this->respondJson(
+                "Links quota reached, max {$variant_provider->configuredValue()}",
+                [],
+                400
+            );
+        }
 
         DB::create('links', [
             'id' => UUID::v6(),
@@ -257,12 +290,35 @@ class LinkController extends Controller
             );
         }
 
-        // TODO: build function
+        $variant_provider = new Variant([
+            'user' => Session::get('variant'),
+            'type' => 'can_edit'
+        ]);
+        if (!$variant_provider->configuredValue()) {
+            return $this->respondJson(
+                'You are not allowed to edit links!',
+                [],
+                403
+            );
+        }
 
-        DB::update('links', [
-            'password' => '',
-            'expires_at' => ''
-        ], ['id' => $id]);
+        $link = DB::get(
+            'links',
+            [
+                'password',
+                'expires_at'
+            ],
+            ['id' => $id]
+        );
+
+        DB::update(
+            'links',
+            [
+                'password' => $request->data->password ?: $link['password'],
+                'expires_at' => $request->data->expires_at ?: $link['expires_at']
+            ],
+            ['id' => $id]
+        );
 
         return $this->respondJson(
             'Link Updated',
@@ -280,10 +336,11 @@ class LinkController extends Controller
      */
     public function delete($id)
     {
+
         if (!DB::has('links', [
             'id' => $id,
             'user_id' => Session::get('id')
-        ])) {
+        ]) && Session::get('variant') !== 'Admin') {
             return $this->respondJson(
                 'Link not found',
                 [],
@@ -291,10 +348,7 @@ class LinkController extends Controller
             );
         }
 
-        DB::delete('links', [
-            'id' => $id,
-            'user_id' => Session::get('id')
-        ]);
+        DB::delete('links', ['id' => $id]);
 
         return $this->respondJson(
             'Link Deleted',

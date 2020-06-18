@@ -26,13 +26,15 @@
     <td>{{ link.created_at }}</td>
 
     <td>
-        <button
-            class="col s4 btn waves-effect waves-light blue accent-4"
-            onClick="editLink('{{ link.id}}')"
-            style="margin-right: 7px"
-        >
-            <i class="material-icons">create</i>
-        </button>
+        {% if can_edit %}
+            <button
+                class="col s4 btn waves-effect waves-light blue accent-4"
+                onClick="editLink('{{ link.id}}')"
+                style="margin-right: 7px"
+            >
+                <i class="material-icons">create</i>
+            </button>
+        {% endif %}
         
         <button
             class="col s4 btn waves-effect waves-light red accent-4"
