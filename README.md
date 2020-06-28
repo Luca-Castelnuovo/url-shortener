@@ -1,4 +1,4 @@
-<p align="center"><a href="https://github.com/Luca-Castelnuovo/URL-Shortener"><img src="https://rawcdn.githack.com/CubeQuence/CubeQuence/855a8fe836989ca40c4e50a889362975eab9ac43/public/assets/images/banner.png"></a></p>
+<p align="center"><a href="https://github.com/Luca-Castelnuovo/URL-Shortener"><img src="https://rawcdn.githack.com/Luca-Castelnuovo/URL-Shortener/3406696e4b53c5b9085e6c1042c79a3117627ed2/public/assets/images/banner.png"></a></p>
 
 <p align="center">
 <a href="https://github.com/Luca-Castelnuovo/URL-Shortener/commits/master"><img src="https://img.shields.io/github/last-commit/Luca-Castelnuovo/URL-Shortener" alt="Latest Commit"></a>
