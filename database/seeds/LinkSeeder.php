@@ -18,17 +18,17 @@ class LinkSeeder extends Seeder
         $faker = Seeder::faker();
         $data = [];
 
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 5; ++$i) {
             $data[] = [
-                'id'            => $faker->uuid,
-                'user_id'       => $faker->uuid,
-                'clicks'        => $faker->numberBetween(0, 10000),
-                'short_url'     => $faker->domainWord,
-                'long_url'      => $faker->url,
-                'password'      => Hash::make($faker->password),
-                'expires_at'    => date('Y-m-d'),
-                'updated_at'    => date('Y-m-d H:i:s'),
-                'created_at'    => date('Y-m-d H:i:s'),
+                'id' => $faker->uuid,
+                'user_id' => $faker->uuid,
+                'clicks' => $faker->numberBetween(0, 10000),
+                'short_url' => $faker->domainWord,
+                'long_url' => $faker->url,
+                'password' => Hash::make($faker->password),
+                'expires_at' => date('Y-m-d'),
+                'updated_at' => date('Y-m-d H:i:s'),
+                'created_at' => date('Y-m-d H:i:s'),
             ];
         }
 

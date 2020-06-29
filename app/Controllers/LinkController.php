@@ -2,26 +2,26 @@
 
 namespace App\Controllers;
 
-use Exception;
-use CQ\DB\DB;
-use CQ\Config\Config;
-use CQ\Captcha\hCaptcha;
-use CQ\Helpers\Str;
-use CQ\Helpers\UUID;
-use CQ\Helpers\State;
-use CQ\Helpers\Session;
-use CQ\Helpers\Variant;
-use CQ\Controllers\Controller;
 use App\Helpers\RatelimitHelper;
 use App\Validators\LinkValidator;
+use CQ\Captcha\hCaptcha;
+use CQ\Config\Config;
+use CQ\Controllers\Controller;
+use CQ\DB\DB;
+use CQ\Helpers\Session;
+use CQ\Helpers\State;
+use CQ\Helpers\Str;
+use CQ\Helpers\UUID;
+use CQ\Helpers\Variant;
+use Exception;
 
 class LinkController extends Controller
 {
     /**
-     * Link screen
-     * 
+     * Link screen.
+     *
      * @param object $request
-     * 
+     *
      * @return Html
      */
     public function view($request)
@@ -55,22 +55,22 @@ class LinkController extends Controller
         return $this->respond('link.twig', [
             'state' => State::set(),
             'error' => $error,
-            'short_url' => Config::get('app.url') . "/{$short_url}",
+            'short_url' => Config::get('app.url')."/{$short_url}",
             'long_url' => $long_url,
             'option' => $option,
             'original_option' => $original_option,
             'fingerprint' => $fingerprint,
-            'site_key' => Config::get('captcha.site_key')
+            'site_key' => Config::get('captcha.site_key'),
         ]);
     }
 
     /**
-     * url redirect
-     * 
+     * url redirect.
+     *
      * @param object $request
      * @param string $short_url
      * @param string $option
-     * 
+     *
      * @return Redirect|Html
      */
     public function index($request, $short_url, $option)
@@ -93,11 +93,11 @@ class LinkController extends Controller
             return $this->redirect("/l?s={$state}&k={$short_url}&e=expired", 404);
         }
 
-        if ($option === 'ratelimit') {
+        if ('ratelimit' === $option) {
             if (!State::valid($request->data->state)) {
                 return $this->respondJson(
                     'Incorrect State',
-                    ['redirect' => Config::get('app.url') . "/{$short_url}"]
+                    ['redirect' => Config::get('app.url')."/{$short_url}"]
                 );
             }
 
@@ -117,17 +117,17 @@ class LinkController extends Controller
             )) {
                 return $this->respondJson(
                     'Captcha Failed',
-                    ['redirect' => Config::get('app.url') . "/{$short_url}"]
+                    ['redirect' => Config::get('app.url')."/{$short_url}"]
                 );
             }
 
             DB::delete('cq_ratelimit', [
-                'fingerprint' => $request->data->fingerprint
+                'fingerprint' => $request->data->fingerprint,
             ]);
 
             return $this->respondJson(
                 'Captcha Completed',
-                ['redirect' => Config::get('app.url') . "/{$short_url}/{$request->data->original_option}"]
+                ['redirect' => Config::get('app.url')."/{$short_url}/{$request->data->original_option}"]
             );
         }
 
@@ -139,11 +139,11 @@ class LinkController extends Controller
             return $this->redirect("/l?s={$state}&k={$short_url}&o=ratelimit&oo={$option}&f={$fingerprint}", 429);
         }
 
-        if ($option === 'password') {
+        if ('password' === $option) {
             if (!State::valid($request->data->state)) {
                 return $this->respondJson(
                     'Incorrect State',
-                    ['redirect' => Config::get('app.url') . "/{$short_url}"]
+                    ['redirect' => Config::get('app.url')."/{$short_url}"]
                 );
             }
 
@@ -160,7 +160,7 @@ class LinkController extends Controller
             if ($request->data->password !== $link['password']) {
                 return $this->respondJson(
                     'Password Incorrect',
-                    ['redirect' => Config::get('app.url') . "/{$short_url}"]
+                    ['redirect' => Config::get('app.url')."/{$short_url}"]
                 );
             }
 
@@ -176,20 +176,19 @@ class LinkController extends Controller
             return $this->redirect("/l?s={$state}&k={$short_url}&o=password", 401);
         }
 
-
         DB::update('links', [
-            'clicks[+]' => 1
+            'clicks[+]' => 1,
         ], [
-            'short_url' => $short_url
+            'short_url' => $short_url,
         ]);
 
-        if ($option === 'qr') {
+        if ('qr' === $option) {
             $state = State::set();
 
             return $this->redirect("/l?s={$state}&k={$short_url}&o=qr&l={$link['long_url']}", 200);
         }
 
-        if ($option === 'confirm') {
+        if ('confirm' === $option) {
             $state = State::set();
 
             return $this->redirect("/l?s={$state}&k={$short_url}&o=confirm&l={$link['long_url']}", 200);
@@ -199,8 +198,8 @@ class LinkController extends Controller
     }
 
     /**
-     * Create short url
-     * 
+     * Create short url.
+     *
      * @param object $request
      *
      * @return Json
@@ -222,7 +221,7 @@ class LinkController extends Controller
         }
 
         if (DB::has('links', [
-            'short_url' => $request->data->short_url
+            'short_url' => $request->data->short_url,
         ])) {
             return $this->respondJson(
                 'Short URL is already used',
@@ -234,7 +233,7 @@ class LinkController extends Controller
         $variant_provider = new Variant([
             'user' => Session::get('variant'),
             'type' => 'max_links',
-            'current_value' => DB::count('links', ['user_id' => Session::get('id')])
+            'current_value' => DB::count('links', ['user_id' => Session::get('id')]),
         ]);
         if (!$variant_provider->limitReached()) {
             return $this->respondJson(
@@ -248,7 +247,7 @@ class LinkController extends Controller
             'id' => UUID::v6(),
             'user_id' => Session::get('id'),
             'short_url' => $request->data->short_url,
-            'long_url' => $request->data->long_url
+            'long_url' => $request->data->long_url,
         ]);
 
         return $this->respondJson(
@@ -258,8 +257,8 @@ class LinkController extends Controller
     }
 
     /**
-     * Update short url
-     * 
+     * Update short url.
+     *
      * @param object $request
      * @param string $id
      *
@@ -279,7 +278,7 @@ class LinkController extends Controller
 
         if (!DB::has('links', [
             'id' => $id,
-            'user_id' => Session::get('id')
+            'user_id' => Session::get('id'),
         ])) {
             return $this->respondJson(
                 'Link not found',
@@ -290,7 +289,7 @@ class LinkController extends Controller
 
         $variant_provider = new Variant([
             'user' => Session::get('variant'),
-            'type' => 'can_edit'
+            'type' => 'can_edit',
         ]);
         if (!$variant_provider->configuredValue()) {
             return $this->respondJson(
@@ -304,7 +303,7 @@ class LinkController extends Controller
             'links',
             [
                 'password' => $request->data->password ?: null,
-                'expires_at' => $request->data->expires_at ?: null
+                'expires_at' => $request->data->expires_at ?: null,
             ],
             ['id' => $id]
         );
@@ -316,8 +315,8 @@ class LinkController extends Controller
     }
 
     /**
-     * Delete short url
-     * 
+     * Delete short url.
+     *
      * @param object $request
      * @param string $id
      *
@@ -325,11 +324,10 @@ class LinkController extends Controller
      */
     public function delete($id)
     {
-
         if (!DB::has('links', [
             'id' => $id,
-            'user_id' => Session::get('id')
-        ]) && Session::get('variant') !== 'Admin') {
+            'user_id' => Session::get('id'),
+        ]) && 'Admin' !== Session::get('variant')) {
             return $this->respondJson(
                 'Link not found',
                 [],
