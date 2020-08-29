@@ -5,10 +5,9 @@ namespace App\Controllers;
 use App\Validators\LinkValidator;
 use CQ\Controllers\Controller;
 use CQ\DB\DB;
-use CQ\Helpers\Session;
+use CQ\Helpers\User;
 use CQ\Helpers\Str;
 use CQ\Helpers\UUID;
-use CQ\Helpers\Roles;
 use Exception;
 
 class LinkController extends Controller
@@ -74,8 +73,8 @@ class LinkController extends Controller
             );
         }
 
-        $user_n_links = DB::count('links', ['user_id' => Session::get('id')]);
-        $max_n_links = Roles::info('max_links');
+        $user_n_links = DB::count('links', ['user_id' => User::getId()]);
+        $max_n_links = User::valueRole('max_links');
         if ($user_n_links >= $max_n_links) {
             return $this->respondJson(
                 "Links quota reached, max {$max_n_links}",
@@ -86,7 +85,7 @@ class LinkController extends Controller
 
         DB::create('links', [
             'id' => UUID::v6(),
-            'user_id' => Session::get('id'),
+            'user_id' => User::getId(),
             'short_url' => $request->data->short_url,
             'long_url' => $request->data->long_url,
         ]);
@@ -109,8 +108,8 @@ class LinkController extends Controller
     {
         if (!DB::has('links', [
             'id' => $id,
-            'user_id' => Session::get('id'),
-        ]) && !Roles::has('admin')) {
+            'user_id' => User::getId(),
+        ]) && !User::hasRole('admin')) {
             return $this->respondJson(
                 'Link not found',
                 [],

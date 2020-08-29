@@ -5,8 +5,7 @@ namespace App\Controllers;
 use CQ\Config\Config;
 use CQ\Controllers\Controller;
 use CQ\DB\DB;
-use CQ\Helpers\Session;
-use CQ\Helpers\Roles;
+use CQ\Helpers\User;
 
 class UserController extends Controller
 {
@@ -27,14 +26,14 @@ class UserController extends Controller
                 'created_at',
             ],
             [
-                'user_id' => Session::get('id'),
+                'user_id' => User::getId(),
                 'ORDER' => ['created_at' => 'DESC'],
             ]
         );
 
         return $this->respond('dashboard.twig', [
             'app' => Config::get('app'),
-            'admin' => Roles::has('admin'),
+            'admin' => User::hasRole('admin'),
             'links' => $links,
         ]);
     }
@@ -46,7 +45,7 @@ class UserController extends Controller
      */
     public function admin()
     {
-        if (!Roles::has('admin')) {
+        if (!User::hasRole('admin')) {
             return $this->redirect('/dashboard', 403);
         }
 
