@@ -6,7 +6,7 @@ use CQ\Config\Config;
 use CQ\Controllers\Controller;
 use CQ\DB\DB;
 use CQ\Helpers\Session;
-use CQ\Helpers\Variant;
+use CQ\Helpers\Roles;
 
 class UserController extends Controller
 {
@@ -24,8 +24,6 @@ class UserController extends Controller
                 'clicks',
                 'short_url',
                 'long_url',
-                'password',
-                'expires_at',
                 'created_at',
             ],
             [
@@ -34,16 +32,10 @@ class UserController extends Controller
             ]
         );
 
-        $variant_provider = new Variant([
-            'user' => Session::get('variant'),
-            'type' => 'can_edit',
-        ]);
-
         return $this->respond('dashboard.twig', [
             'app' => Config::get('app'),
+            'admin' => Roles::has('admin'),
             'links' => $links,
-            'can_edit' => $variant_provider->configuredValue(),
-            'admin' => 'Admin' === Session::get('variant'),
         ]);
     }
 
@@ -54,7 +46,7 @@ class UserController extends Controller
      */
     public function admin()
     {
-        if ('Admin' !== Session::get('variant')) {
+        if (!Roles::has('admin')) {
             return $this->redirect('/dashboard', 403);
         }
 
@@ -74,9 +66,8 @@ class UserController extends Controller
 
         return $this->respond('admin.twig', [
             'app' => Config::get('app'),
-            'links' => $links,
-            'can_edit' => false,
             'admin' => true,
+            'links' => $links,
         ]);
     }
 }
