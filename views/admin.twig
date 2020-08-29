@@ -11,7 +11,7 @@
                 <th>Orginal URL</th>
                 <th>Clicks</th>
                 <th>Created At</th>
-                <th>Actions</th>
+                <th>Delete</th>
             </tr>
         </thead>
 
@@ -21,8 +21,6 @@
             {% endfor %}
         </tbody>
     </table>
-
-    <form id="linkEdit" class="modal"></form>
 </div>
 
 <script>window._links = {{ links|json_encode|raw }}</script>

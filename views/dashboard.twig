@@ -11,7 +11,7 @@
                 <th>Orginal URL</th>
                 <th>Clicks</th>
                 <th>Created At</th>
-                <th>Actions</th>
+                <th>Delete</th>
             </tr>
         </thead>
 
@@ -21,33 +21,6 @@
             {% endfor %}
         </tbody>
     </table>
-
-    <form id="linkEdit" class="modal">
-        <div class="modal-content">
-            <h4>Edit Link</h4>
-
-            <input type="hidden" name="id" value="">
-            
-            <div class="row">
-                <div class="input-field col s12">
-                    <input type="text" id="expires_at" class="validate datepicker" name="expires_at">
-                    <label for="expires_at">Expires At</label>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="input-field col s12">
-                    <input type="text" id="password" class="validate" name="password">
-                    <label for="password">Password</label>
-                </div>
-            </div>
-        </div>
-        
-        <div class="modal-footer">
-            <button class="btn red accent-4 waves-effect waves-light modal-close" type="button" style="margin-right: 7px">Cancel</button>
-            <button class="btn blue accent-4 waves-effect waves-light">Update</button>
-        </div>
-    </form>
 </div>
 
 <script>window._links = {{ links|json_encode|raw }}</script>

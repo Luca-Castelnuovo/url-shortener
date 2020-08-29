@@ -2,178 +2,33 @@
 
 namespace App\Controllers;
 
-use App\Helpers\RatelimitHelper;
 use App\Validators\LinkValidator;
-use CQ\Captcha\hCaptcha;
-use CQ\Config\Config;
 use CQ\Controllers\Controller;
 use CQ\DB\DB;
-use CQ\Helpers\Session;
-use CQ\Helpers\State;
+use CQ\Helpers\User;
 use CQ\Helpers\Str;
 use CQ\Helpers\UUID;
-use CQ\Helpers\Variant;
 use Exception;
 
 class LinkController extends Controller
 {
     /**
-     * Link screen.
-     *
-     * @param object $request
-     *
-     * @return Html
-     */
-    public function view($request)
-    {
-        $state = $request->getQueryParams()['s'] ?: '';
-        $error = $request->getQueryParams()['e'] ?: '';
-        $short_url = $request->getQueryParams()['k'] ?: '';
-        $long_url = $request->getQueryParams()['l'] ?: '';
-        $option = $request->getQueryParams()['o'] ?: '';
-        $original_option = $request->getQueryParams()['oo'] ?: '';
-        $fingerprint = $request->getQueryParams()['f'] ?: '';
-
-        if (!State::valid($state)) {
-            return $this->redirect('/');
-        }
-
-        switch ($error) {
-            case 'not_found':
-                $error = 'The requested link could not be found!';
-                break;
-
-            case 'expired':
-                $error = 'The requested link has expired!';
-                break;
-
-            default:
-                $error = '';
-                break;
-        }
-
-        return $this->respond('link.twig', [
-            'state' => State::set(),
-            'error' => $error,
-            'short_url' => Config::get('app.url')."/{$short_url}",
-            'long_url' => $long_url,
-            'option' => $option,
-            'original_option' => $original_option,
-            'fingerprint' => $fingerprint,
-            'site_key' => Config::get('captcha.site_key'),
-        ]);
-    }
-
-    /**
      * url redirect.
      *
-     * @param object $request
      * @param string $short_url
-     * @param string $option
      *
      * @return Redirect|Html
      */
-    public function index($request, $short_url, $option)
+    public function index($short_url)
     {
         $link = DB::get(
             'links',
-            ['expires_at', 'password', 'long_url'],
+            ['long_url'],
             ['short_url' => $short_url]
         );
 
         if (!$link) {
-            $state = State::set();
-
-            return $this->redirect("/l?s={$state}&k={$short_url}&e=not_found", 404);
-        }
-
-        if ($link['expires_at'] && $link['expires_at'] < date('Y-m-d')) {
-            $state = State::set();
-
-            return $this->redirect("/l?s={$state}&k={$short_url}&e=expired", 404);
-        }
-
-        if ('ratelimit' === $option) {
-            if (!State::valid($request->data->state)) {
-                return $this->respondJson(
-                    'Incorrect State',
-                    ['redirect' => Config::get('app.url')."/{$short_url}"]
-                );
-            }
-
-            try {
-                LinkValidator::ratelimit($request->data);
-            } catch (Exception $e) {
-                return $this->respondJson(
-                    'Provided data was malformed',
-                    json_decode($e->getMessage()),
-                    422
-                );
-            }
-
-            if (!hCaptcha::v1(
-                Config::get('captcha.secret_key'),
-                $request->data->{'h-captcha-response'}
-            )) {
-                return $this->respondJson(
-                    'Captcha Failed',
-                    ['redirect' => Config::get('app.url')."/{$short_url}"]
-                );
-            }
-
-            DB::delete('cq_ratelimit', [
-                'fingerprint' => $request->data->fingerprint,
-            ]);
-
-            return $this->respondJson(
-                'Captcha Completed',
-                ['redirect' => Config::get('app.url')."/{$short_url}/{$request->data->original_option}"]
-            );
-        }
-
-        $ratelimit = new RatelimitHelper($request);
-        if (!$ratelimit->valid()) {
-            $state = State::set();
-            $fingerprint = $ratelimit->getFingerprint();
-
-            return $this->redirect("/l?s={$state}&k={$short_url}&o=ratelimit&oo={$option}&f={$fingerprint}", 429);
-        }
-
-        if ('password' === $option) {
-            if (!State::valid($request->data->state)) {
-                return $this->respondJson(
-                    'Incorrect State',
-                    ['redirect' => Config::get('app.url')."/{$short_url}"]
-                );
-            }
-
-            try {
-                LinkValidator::password($request->data);
-            } catch (Exception $e) {
-                return $this->respondJson(
-                    'Provided data was malformed',
-                    json_decode($e->getMessage()),
-                    422
-                );
-            }
-
-            if ($request->data->password !== $link['password']) {
-                return $this->respondJson(
-                    'Password Incorrect',
-                    ['redirect' => Config::get('app.url')."/{$short_url}"]
-                );
-            }
-
-            return $this->respondJson(
-                'Password Correct',
-                ['redirect' => $link['long_url']]
-            );
-        }
-
-        if ($link['password']) {
-            $state = State::set();
-
-            return $this->redirect("/l?s={$state}&k={$short_url}&o=password", 401);
+            return $this->redirect("/error/404", 404);
         }
 
         DB::update('links', [
@@ -181,18 +36,6 @@ class LinkController extends Controller
         ], [
             'short_url' => $short_url,
         ]);
-
-        if ('qr' === $option) {
-            $state = State::set();
-
-            return $this->redirect("/l?s={$state}&k={$short_url}&o=qr&l={$link['long_url']}", 200);
-        }
-
-        if ('confirm' === $option) {
-            $state = State::set();
-
-            return $this->redirect("/l?s={$state}&k={$short_url}&o=confirm&l={$link['long_url']}", 200);
-        }
 
         return $this->redirect($link['long_url']);
     }
@@ -230,14 +73,11 @@ class LinkController extends Controller
             );
         }
 
-        $variant_provider = new Variant([
-            'user' => Session::get('variant'),
-            'type' => 'max_links',
-            'current_value' => DB::count('links', ['user_id' => Session::get('id')]),
-        ]);
-        if (!$variant_provider->limitReached()) {
+        $user_n_links = DB::count('links', ['user_id' => User::getId()]);
+        $max_n_links = User::valueRole('max_links');
+        if ($user_n_links >= $max_n_links) {
             return $this->respondJson(
-                "Links quota reached, max {$variant_provider->configuredValue()}",
+                "Links quota reached, max {$max_n_links}",
                 [],
                 400
             );
@@ -245,71 +85,13 @@ class LinkController extends Controller
 
         DB::create('links', [
             'id' => UUID::v6(),
-            'user_id' => Session::get('id'),
+            'user_id' => User::getId(),
             'short_url' => $request->data->short_url,
             'long_url' => $request->data->long_url,
         ]);
 
         return $this->respondJson(
             'Link Created',
-            ['reload' => true]
-        );
-    }
-
-    /**
-     * Update short url.
-     *
-     * @param object $request
-     * @param string $id
-     *
-     * @return Json
-     */
-    public function update($request, $id)
-    {
-        try {
-            LinkValidator::update($request->data);
-        } catch (Exception $e) {
-            return $this->respondJson(
-                'Provided data was malformed',
-                json_decode($e->getMessage()),
-                422
-            );
-        }
-
-        if (!DB::has('links', [
-            'id' => $id,
-            'user_id' => Session::get('id'),
-        ])) {
-            return $this->respondJson(
-                'Link not found',
-                [],
-                404
-            );
-        }
-
-        $variant_provider = new Variant([
-            'user' => Session::get('variant'),
-            'type' => 'can_edit',
-        ]);
-        if (!$variant_provider->configuredValue()) {
-            return $this->respondJson(
-                'You are not allowed to edit links!',
-                [],
-                403
-            );
-        }
-
-        DB::update(
-            'links',
-            [
-                'password' => $request->data->password ?: null,
-                'expires_at' => $request->data->expires_at ?: null,
-            ],
-            ['id' => $id]
-        );
-
-        return $this->respondJson(
-            'Link Updated',
             ['reload' => true]
         );
     }
@@ -326,8 +108,8 @@ class LinkController extends Controller
     {
         if (!DB::has('links', [
             'id' => $id,
-            'user_id' => Session::get('id'),
-        ]) && 'Admin' !== Session::get('variant')) {
+            'user_id' => User::getId(),
+        ]) && !User::hasRole('admin')) {
             return $this->respondJson(
                 'Link not found',
                 [],

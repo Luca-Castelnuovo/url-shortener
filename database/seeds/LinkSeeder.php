@@ -1,7 +1,6 @@
 <?php
 
 use CQ\DB\Seeder;
-use CQ\Helpers\Hash;
 
 class LinkSeeder extends Seeder
 {
@@ -25,8 +24,6 @@ class LinkSeeder extends Seeder
                 'clicks' => $faker->numberBetween(0, 10000),
                 'short_url' => $faker->domainWord,
                 'long_url' => $faker->url,
-                'password' => Hash::make($faker->password),
-                'expires_at' => date('Y-m-d'),
                 'updated_at' => date('Y-m-d H:i:s'),
                 'created_at' => date('Y-m-d H:i:s'),
             ];

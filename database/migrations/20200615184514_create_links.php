@@ -37,8 +37,6 @@ class CreateLinks extends Migration
             ->addColumn('clicks', 'integer', ['default' => 0])
             ->addColumn('short_url', 'string')
             ->addColumn('long_url', 'string', ['limit' => 2048])
-            ->addColumn('password', 'string', ['null' => true])
-            ->addColumn('expires_at', 'date', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
             ->addColumn('created_at', 'datetime', ['default' => 'CURRENT_TIMESTAMP'])
             ->create()

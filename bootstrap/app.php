@@ -15,9 +15,7 @@ $config->attach('analytics');
 $config->attach('app');
 $config->attach('auth'); // auth.castelnuovo.xyz
 $config->attach('cache');
-$config->attach('captcha');
 $config->attach('database');
-$config->attach('ratelimit');
 $config->attach('roles');
 
 // Debug Helper
