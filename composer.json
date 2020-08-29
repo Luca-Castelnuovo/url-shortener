@@ -14,7 +14,7 @@
     ],
     "require": {
         "php": ">=5.3.0",
-        "cubequence/framework": "dev-master"
+        "cubequence/framework": "^1.1"
     },
     "require-dev": {
         "filp/whoops": "^2.7"
@@ -38,6 +38,6 @@
     },
     "support": {
         "issues": "https://github.com/Luca-Castelnuovo/URL-Shortener/issues",
-        "source": "https://github.com/CubeQuence/URL-Shortener"
+        "source": "https://github.com/Luca-Castelnuovo/URL-Shortener"
     }
 }
