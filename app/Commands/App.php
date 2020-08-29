@@ -49,7 +49,7 @@ class App
             }
 
             file_put_contents($path, str_replace(
-                'APP_KEY="'.getenv('APP_KEY').'"',
+                'APP_KEY="'.env('APP_KEY').'"',
                 'APP_KEY="'.$key.'"',
                 file_get_contents($path)
             ));
