@@ -10,16 +10,19 @@
 
 Simple URL shortener
 
+- [Homepage](https://castelnuovo.xyz)
+
 ## Installation
 
 For development
 
 1. `git clone git@github.com:Luca-Castelnuovo/url-shortener.git`
-2. Edit `.env`
-3. `php cubequence app:key`
-4. `php cubequence db:migrate`
-5. `php cubequence db:seed`
-6. Start development server `php -S localhost:8080 -t public`
+2. `composer install`
+3. Edit `.env`
+4. `php cubequence app:key`
+5. `php cubequence db:migrate`
+6. `php cubequence db:seed`
+7. Start development server `php -S localhost:8080 -t public`
 
 For deployment
 
