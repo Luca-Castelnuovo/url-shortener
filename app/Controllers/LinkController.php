@@ -4,11 +4,10 @@ namespace App\Controllers;
 
 use App\Validators\LinkValidator;
 use CQ\Controllers\Controller;
-use CQ\DB\DB;
 use CQ\Helpers\User;
 use CQ\Helpers\Str;
 use CQ\Helpers\UUID;
-use Exception;
+use CQ\DB\DB;
 
 class LinkController extends Controller
 {
@@ -51,10 +50,10 @@ class LinkController extends Controller
     {
         try {
             LinkValidator::create($request->data);
-        } catch (Exception $e) {
+        } catch (\Throwable $th) {
             return $this->respondJson(
                 'Provided data was malformed',
-                json_decode($e->getMessage()),
+                json_decode($th->getMessage()),
                 422
             );
         }
