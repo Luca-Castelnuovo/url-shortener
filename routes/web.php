@@ -16,6 +16,10 @@ Route::get('/{short_url}/?{option?}', 'LinkController@index');
 Middleware::create(['prefix' => '/auth'], function () {
     Route::get('/request', 'AuthController@request');
     Route::get('/callback', 'AuthController@callback');
+
+    Route::get('/request/device', 'AuthController@requestDevice');
+    Route::post('/callback/device', 'AuthController@callbackDevice');
+
     Route::get('/logout', 'AuthController@logout');
 });
 
