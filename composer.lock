@@ -914,26 +914,31 @@
                 "hex2bin",
                 "rfc4648"
             ],
+            "support": {
+                "email": "info@paragonie.com",
+                "issues": "https://github.com/paragonie/constant_time_encoding/issues",
+                "source": "https://github.com/paragonie/constant_time_encoding"
+            },
             "time": "2020-12-06T15:14:20+00:00"
         },
         {
             "name": "paragonie/halite",
-            "version": "v4.7.1",
+            "version": "v4.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/halite.git",
-                "reference": "538a0579e86ac8222973be55d17615a7be8f29cb"
+                "reference": "7596d5cb25154092b524c34cb9ce2201db612ffc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/halite/zipball/538a0579e86ac8222973be55d17615a7be8f29cb",
-                "reference": "538a0579e86ac8222973be55d17615a7be8f29cb",
+                "url": "https://api.github.com/repos/paragonie/halite/zipball/7596d5cb25154092b524c34cb9ce2201db612ffc",
+                "reference": "7596d5cb25154092b524c34cb9ce2201db612ffc",
                 "shasum": ""
             },
             "require": {
                 "paragonie/constant_time_encoding": "^2",
                 "paragonie/hidden-string": "^1|^2",
-                "paragonie/sodium_compat": "^1.14",
+                "paragonie/sodium_compat": "^1.15",
                 "php": "^7.2|^8"
             },
             "require-dev": {
@@ -979,7 +984,12 @@
                 "signatures",
                 "sodium"
             ],
-            "time": "2020-12-06T15:18:22+00:00"
+            "support": {
+                "docs": "https://github.com/paragonie/halite/tree/master/doc",
+                "issues": "https://github.com/paragonie/halite/issues",
+                "source": "https://github.com/paragonie/halite/tree/v4.8.0"
+            },
+            "time": "2021-04-18T19:24:56+00:00"
         },
         {
             "name": "paragonie/hidden-string",
@@ -1028,6 +1038,10 @@
                 "stack trace",
                 "string"
             ],
+            "support": {
+                "issues": "https://github.com/paragonie/hidden-string/issues",
+                "source": "https://github.com/paragonie/hidden-string/tree/v1.1.0"
+            },
             "time": "2020-12-03T14:24:26+00:00"
         },
         {
