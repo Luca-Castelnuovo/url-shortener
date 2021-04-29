@@ -1,0 +1,22 @@
+version: 2
+updates:
+- package-ecosystem: composer
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "04:00"
+  open-pull-requests-limit: 99
+  allow:
+  - dependency-type: direct
+  - dependency-type: indirect
+  ignore:
+  - dependency-name: cakephp/datasource
+    versions:
+    - 4.2.4
+    - 4.2.5
+  - dependency-name: cakephp/core
+    versions:
+    - 4.2.5
+  - dependency-name: cakephp/utility
+    versions:
+    - 4.2.4
